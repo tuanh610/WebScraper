@@ -1,6 +1,11 @@
 from ScrapEngine import ScrapEngine
 from PhoneData import PhoneData
 
+import DatabaseEngine
+
+DatabaseEngine.createTable()
+
+"""
 url = "https://hoanghamobile.com/dien-thoai-di-dong-c14.html"
 param = "?sort=0&p="
 ignoreTerm = ["Chính hãng", "Chính Hãng", "-"]
@@ -14,3 +19,4 @@ for item in result:
         print("Unable to parse: " + item[0] + ": " + item[1])
 
 print("done")
+"""

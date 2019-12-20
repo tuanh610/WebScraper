@@ -3,58 +3,60 @@ from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
 import json
 from PhoneData import PhoneData
+import decimal
 
 
+# Helper class to convert a DynamoDB item to JSON.
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            if o % 1 > 0:
+                return float(o)
+            else:
+                return int(o)
+        return super(DecimalEncoder, self).default(o)
+
+
+def createTable(tableName: str):
+    dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
+    table = dynamodb.create_table(
+        TableName=tableName,
+        keySchema=[
+            {
+                'AttributeName': 'DeviceName',
+                'KeyType': 'HASH'
+            }
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'DeviceName',
+                'AttributeType': 'S'
+            }
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 3,
+            'WriteCapacityUnits': 3
+        }
+    )
+    table.meta.client_get_waiter('table_exist').wait(TableName='PriceList')
+    print(table.item_count)
 
 class dynammoDBAdapter:
 
     def __init__(self, tableName: str):
         self.dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
         self.tableName = tableName
+        self.table = self.dynamodb.Table(self.tableName)
 
-    def createTable(self):
-        table = self.dynamodb.create_table(
-            TableName=self.table_name,
-            keySchema=[
-                {
-                    'AttributeName': 'DeviceName',
-                    'KeyType': 'HASH'
-                },
-                {
-                    'AttributeName': 'price',
-                    'KeyType': 'RANGE'
-                }
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'DeviceName',
-                    'AttributeType': 'S'
-                },
-                {
-                    'AttributeName': 'price',
-                    'AttributeType': 'N'
-                }
-            ],
-            ProvisionedThroughput={
-                'ReadCapacityUnits': 3,
-                'WriteCapacityUnits': 3
-            }
-        )
-
-        table.meta.client_get_waiter('table_exist').wait(TableName='PriceList')
-        print(table.item_count)
-
-    def pullDataFromDB(self, tableName: str):
-        table = self.dynamodb.Table(tableName)
-        response = table.get_item(
+    def pullDataFromDB(self):
+        response = self.table.get_item(
 
         )
 
 
-    def pushAllDataToDB(self, tableName: str, data: [PhoneData]):
-        table = self.dynamodb.Table(tableName)
+    def pushAllDataToDB(self, data: [PhoneData]):
         for phone in data:
-            table.put_item(
+            self.table.put_item(
                 Item={
                     'DeviceName': phone.getName(),
                     'price': phone.getPrice(),
@@ -64,10 +66,9 @@ class dynammoDBAdapter:
         print("Data pushed completed")
 
 
-    def getItemFromDB(self, tableName: str,phoneName: str):
-        table = self.dynamodb.Table(tableName)
+    def getItemFromDB(self, phoneName: str):
         try:
-            response = table.get_item(
+            response = self.table.get_item(
                 Key={
                     'DeviceName': phoneName
                 }
@@ -77,7 +78,36 @@ class dynammoDBAdapter:
         else:
             item = response['Item']
             print("Get item successfully")
+            print(json.dumps(item, indent=4, cls=DecimalEncoder))
 
     def updateItemToDB(self, item: PhoneData):
-        
+        try:
+            response = self.table.update_item(
+                Key={
+                    'DeviceName': item.getName()
+                },
+                UpdateExpression="set info = :i, price = :p",
+                ExpressionAttributeValues={
+                    ':p': item.getPrice(),
+                    ':i': item.getInfo()
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+        except Exception as e:
+            print(e.response['Error']['Message'])
+        else:
+            print("UpdateItem succeeded:")
+            print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
+    def deleteItemFromDB(self, item:PhoneData):
+        try:
+            response = self.table.delete_item(
+                Key={
+                    'DeviceName': item.getName()
+                },
+            )
+        except Exception as e:
+            print(e.response['Error']['Message'])
+        else:
+            print("DeleteItem succeeded:")
+            print(json.dumps(response, indent=4, cls=DecimalEncoder))
