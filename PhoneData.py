@@ -15,6 +15,8 @@ class PhoneData:
         else:
             try:
                 self.price = float(price)
+                if price < 0:
+                    raise PhoneDataInvalidException
             except Exception as e:
                 raise PhoneDataInvalidException
 
@@ -26,7 +28,7 @@ class PhoneData:
         splited = temp.split(sep=' ')
         splited_len = len(splited)
         try:
-            if splited_len == 2:
+            if splited_len >= 2:
                 if (not splited[0].isdecimal()) and (not splited[1].isdecimal()):
                     raise PhoneDataInvalidException
                 elif splited[0].isdecimal():
