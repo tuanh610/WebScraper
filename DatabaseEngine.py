@@ -3,6 +3,7 @@ from boto3.dynamodb.conditions import Key, Attr
 from botocore.exceptions import ClientError
 import json
 from PhoneData import PhoneData
+from PhoneData import PhoneDataInvalidException
 import decimal
 
 
@@ -19,27 +20,34 @@ class DecimalEncoder(json.JSONEncoder):
 
 def createTable(tableName: str):
     dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
-    table = dynamodb.create_table(
-        TableName=tableName,
-        keySchema=[
-            {
-                'AttributeName': 'DeviceName',
-                'KeyType': 'HASH'
+    try:
+        table = dynamodb.create_table(
+            TableName=tableName,
+            KeySchema=[
+                {
+                    'AttributeName': 'DeviceName',
+                    'KeyType': 'HASH'
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'DeviceName',
+                    'AttributeType': 'S'
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 3,
+                'WriteCapacityUnits': 3
             }
-        ],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'DeviceName',
-                'AttributeType': 'S'
-            }
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 3,
-            'WriteCapacityUnits': 3
-        }
-    )
-    table.meta.client_get_waiter('table_exist').wait(TableName='PriceList')
-    print(table.item_count)
+        )
+        table.meta.client_get_waiter('table_exist').wait(TableName='PriceList')
+        print(table.item_count)
+    except ClientError as e:
+        if e.response['Error']['Code'] == "ResourceNotFoundException":
+            print("Table " + tableName + " already existed")
+        else:
+            print(e.response['Error']['Message'])
+
 
 class dynammoDBAdapter:
 
@@ -65,6 +73,21 @@ class dynammoDBAdapter:
             )
         print("Data pushed completed")
 
+    def getAllDataFromTable(self):
+        try:
+
+            response = self.table.scan(
+                FilterExpression=Attr('price').gt(0)
+            )
+            result = []
+            for item in response['Items']:
+                try:
+                    result.append(PhoneData(item['DeviceName'], item['price'], item['info']))
+                except PhoneDataInvalidException as e:
+                    print("Phone data invalid: " + item['DeviceName'] + ": " + item['price'])
+            return result
+        except ClientError as e:
+            print(e.response['Error']['Message'])
 
     def getItemFromDB(self, phoneName: str):
         try:
@@ -111,3 +134,4 @@ class dynammoDBAdapter:
         else:
             print("DeleteItem succeeded:")
             print(json.dumps(response, indent=4, cls=DecimalEncoder))
+

@@ -3,12 +3,22 @@ class PhoneDataInvalidException(Exception):
 
 
 class PhoneData:
-    def __init__(self, name: str, price_str: str, info=None):
+    def __init__(self, name: str, price, info=None):
         if info is None:
             self.info = {}
+        else:
+            self.info = info
         self.name = name
-        self.price = 0
-        self.processPriceString(price_str)
+        if isinstance(price, str):
+            self.price = 0
+            self.processPriceString(price)
+        else:
+            try:
+                self.price = float(price)
+            except Exception as e:
+                raise PhoneDataInvalidException
+
+
 
     def processPriceString(self, priceStr: str):
         #find currency symbol

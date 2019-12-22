@@ -1,6 +1,7 @@
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
+from urllib.parse import urljoin
 import os
 
 
@@ -22,12 +23,18 @@ class ScrapEngine:
         if len(allProducts) == 0:
             raise NoProductFoundException
         for a in allProducts:
-            name_html = a.find('div', attrs={'class': 'product-name'})
-            price_html = a.find('div', attrs={'class': 'product-price'})
+            name_html = self.hideInvalidTag(a.find('div', attrs={'class': 'product-name'}), ['strike'])
+            price_html = self.hideInvalidTag(a.find('div', attrs={'class': 'product-price'}), ['strike'])
             try:
                 name = self.processString(name_html.getText(), ignoreTerm)
                 price = self.processString(price_html.getText(), ignoreTerm)
-                listMobile.append((name, price))
+                href = "n.a"
+                try:
+                    temp = name_html.find('a', href=True)
+                    href = urljoin(url, temp['href'])
+                except Exception as e:
+                    pass
+                listMobile.append((name, price, href))
             except Exception as e:
                 print("Error: " + str(e))
         return listMobile
@@ -52,3 +59,9 @@ class ScrapEngine:
             except NoProductFoundException as e:
                 break
         return allResult
+
+    def hideInvalidTag(self, originalContent, invalidTag:[str]):
+        for tag in originalContent:
+            if tag.name in invalidTag:
+                tag.extract()
+        return originalContent
