@@ -1,19 +1,21 @@
 language: python
 python:
-  - "3.7"
-  - "3.8"
+- '3.7'
+- '3.8'
 addons:
   chrome: stable
-#make chrome run headless
 before_install:
-  - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
-# command to install dependencies
+- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
+- ./ecr_credentials.sh
 install:
-  - pip install -r requirements.txt
-# command to run tests
 script: python3 Main.py
-#do before script
 before_script:
-  - LATEST_CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"`
-  - curl "https://chromedriver.storage.googleapis.com/${LATEST_CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O
-  - unzip chromedriver_linux64.zip -d ~/bin
+- LATEST_CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"`
+- curl "https://chromedriver.storage.googleapis.com/${LATEST_CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+  -O
+- unzip chromedriver_linux64.zip -d ~/bin
+env:
+  global:
+    secure: mhw1LFpFXxk1ltgX6wcMj4QbCZzJSTu2ga8x2MtHTrFQP7K6H8bA5/5sinSohGwknyZSjSNYIvdpnmFlN81JRUoBPmavfRY69ROO0q3FPtaFdZi9U7b23cb/5H5w/etEpcQYCmw+vPYT44ulHDDYyl5h95STJQXgITO1yfGfJNHbc2o2DfpdErBcA6F2m2sZqnz4o8eiAr2wRBlBpoSq7l9+xtKDfXRdNsOdp8/403aFZLF/7S4ecYgCVxGvMax86B6rGNoEoqvua7AnAE/OTPkZkEeBPXkSMlf+fk3THRHmnWyD2EYiipm4yH3hzyqx/lccI04+dzhEEkNCV4eGIXktVoY0E+oOC9GLwX+1opezHNFCNTvA/r5bz55oVLhvBrRYEFYBLjRsKR9JVSXTDavIvc8SQykAmeOUkScgi1jcKr6LLQ4ATkT5zYFN2n9NFhZHNHTIxgcimNyP3lUspzdD1CJGx96lme0i8c6wbUvZPEaj67sd/tC9IWiPuIUHZVxDyeLSobtQW4WBEu3c+lY6w3Hl/+c7RVJu0ilPmEA5AQFyl2JQcU8MKAQR2QD9O9JG0fdHocADA8c1bQUHteGZ9dcM6lR4HRac1Smg2hmkxnoddAo6E7f/DpDntdoKU+YfL6pnRE9yjwn5j8BP1NN5nMzOqmGjdGIEOTKQ4ag=
+dd:
+  secure: lZ5UGZj8ETlPsoAKP0VM07FdG8aOA3rD8uMeYp4sHOt4Sf1B2tJOCyUXyY+zBQwJyBLKQ6LAclmXeYpWoRhWoKNBQjIrpJgcIHbT55J8CaKhNvnbX97qH0jP9d9bkTNsmU+q1QoiRIw+Phe9vonVnXlNZj81hfCCs0kKbPkvfkW5dyUTPflQFNkKwuJkSYafeEq19r6Hjscempa6/FQu8xX8pGaRoEmQlnwI9bIxmBdAjMSsbjtIUvYLWoZZPq7cL4STsBjgo4gqLY0NFIRIio3uxOGHPtq0KKhlbFHEHCbr3lnI6l1I2kFJBokXpwd1+Kn0/4AeO88fUYbwXa/z6DvFIM+q7usYEayWxp0cHCyBm/orsqMvSAq/v2pRCGQ7wDk8AqW8UeMNhOR7FCuvB22XD6JDY5wjHYQrJ9zW9WbKKV8OctLUIBvZFdfAn8pqyX15kUInlorhYU8j3eMRToH4sM/siYTxQ4CjARoPHFHvE3IBOks81xCVG72+szB7StPTlr1nrqi/U3ddfhAvNVcCNQVGpEhHoV1L7dykFNBIlqB814kvPA0UReuRybElUj2Sg8UgWXeDc4VCg+glC4FjXvLRJrpF6hRRDYd3jD6YnnuAEvXSTvHSImJXkJDyZSnLLJOzG85uRE3UTOc/7DeGyioPn8XUE5lIjYDrZyU=
