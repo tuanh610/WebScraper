@@ -12,7 +12,7 @@ class ScrapEngine:
 
     def connectToWebSite(self, url, ignoreTerm=None):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        driver = webdriver.Chrome(executable_path=dir_path + "/chromedriver.exe")
+        driver = webdriver.Chrome()
         driver.get(url)
         content = driver.page_source
         driver.close()
