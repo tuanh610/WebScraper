@@ -6,8 +6,8 @@ python:
 addons:
   chrome: stable
 before_install:
-- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost
-  &
+- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
+- cd $TRAVIS_BUILD_DIR && ls -a && sudo chmod +x ecr_credential.sh && ls -a && ./ecr_credential.sh
 install:
 - pip install -r requirements.txt
 script: python3 Main.py
