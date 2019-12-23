@@ -1,3 +1,4 @@
+sudo: required
 language: python
 python:
 - '3.7'
@@ -7,7 +8,7 @@ addons:
 #make chrome run headless
 before_install:
 - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
-- cd $TRAVIS_BUILD_DIR && ls && ./ecr_credentials.sh
+- cd $TRAVIS_BUILD_DIR && sudo chmod +x ecr_credentials.sh && ls -a && ./ecr_credentials.sh
 install:
   - pip install -r requirements.txt
 # command to run tests
