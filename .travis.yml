@@ -1,18 +1,17 @@
+sudo: required
 language: python
 python:
 - '3.7'
 - '3.8'
 addons:
   chrome: stable
-#make chrome run headless
 before_install:
-- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
-- ./ecr_credentials.sh
+- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost
+  &
+- cd $TRAVIS_BUILD_DIR && ls -a && sudo chmod +x ecr_credential.sh && ls -a && ./ecr_credential.sh
 install:
-  - pip install -r requirements.txt
-# command to run tests
+- pip install -r requirements.txt
 script: python3 Main.py
-#do before script
 before_script:
 - LATEST_CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"`
 - curl "https://chromedriver.storage.googleapis.com/${LATEST_CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
@@ -20,6 +19,5 @@ before_script:
 - unzip chromedriver_linux64.zip -d ~/bin
 env:
   global:
-    secure: mhw1LFpFXxk1ltgX6wcMj4QbCZzJSTu2ga8x2MtHTrFQP7K6H8bA5/5sinSohGwknyZSjSNYIvdpnmFlN81JRUoBPmavfRY69ROO0q3FPtaFdZi9U7b23cb/5H5w/etEpcQYCmw+vPYT44ulHDDYyl5h95STJQXgITO1yfGfJNHbc2o2DfpdErBcA6F2m2sZqnz4o8eiAr2wRBlBpoSq7l9+xtKDfXRdNsOdp8/403aFZLF/7S4ecYgCVxGvMax86B6rGNoEoqvua7AnAE/OTPkZkEeBPXkSMlf+fk3THRHmnWyD2EYiipm4yH3hzyqx/lccI04+dzhEEkNCV4eGIXktVoY0E+oOC9GLwX+1opezHNFCNTvA/r5bz55oVLhvBrRYEFYBLjRsKR9JVSXTDavIvc8SQykAmeOUkScgi1jcKr6LLQ4ATkT5zYFN2n9NFhZHNHTIxgcimNyP3lUspzdD1CJGx96lme0i8c6wbUvZPEaj67sd/tC9IWiPuIUHZVxDyeLSobtQW4WBEu3c+lY6w3Hl/+c7RVJu0ilPmEA5AQFyl2JQcU8MKAQR2QD9O9JG0fdHocADA8c1bQUHteGZ9dcM6lR4HRac1Smg2hmkxnoddAo6E7f/DpDntdoKU+YfL6pnRE9yjwn5j8BP1NN5nMzOqmGjdGIEOTKQ4ag=
-dd:
-  secure: lZ5UGZj8ETlPsoAKP0VM07FdG8aOA3rD8uMeYp4sHOt4Sf1B2tJOCyUXyY+zBQwJyBLKQ6LAclmXeYpWoRhWoKNBQjIrpJgcIHbT55J8CaKhNvnbX97qH0jP9d9bkTNsmU+q1QoiRIw+Phe9vonVnXlNZj81hfCCs0kKbPkvfkW5dyUTPflQFNkKwuJkSYafeEq19r6Hjscempa6/FQu8xX8pGaRoEmQlnwI9bIxmBdAjMSsbjtIUvYLWoZZPq7cL4STsBjgo4gqLY0NFIRIio3uxOGHPtq0KKhlbFHEHCbr3lnI6l1I2kFJBokXpwd1+Kn0/4AeO88fUYbwXa/z6DvFIM+q7usYEayWxp0cHCyBm/orsqMvSAq/v2pRCGQ7wDk8AqW8UeMNhOR7FCuvB22XD6JDY5wjHYQrJ9zW9WbKKV8OctLUIBvZFdfAn8pqyX15kUInlorhYU8j3eMRToH4sM/siYTxQ4CjARoPHFHvE3IBOks81xCVG72+szB7StPTlr1nrqi/U3ddfhAvNVcCNQVGpEhHoV1L7dykFNBIlqB814kvPA0UReuRybElUj2Sg8UgWXeDc4VCg+glC4FjXvLRJrpF6hRRDYd3jD6YnnuAEvXSTvHSImJXkJDyZSnLLJOzG85uRE3UTOc/7DeGyioPn8XUE5lIjYDrZyU=
+  - secure: nzIgTnqc8A6PpNENfB0qhGfFzfnP1Em4k3bddEinw3y9aWhI7N73J2dSnNN/9A8IpMPpxd75hFJwV1PBW74F1OjWQQKqo27EIW7OkElgUy4z8mwalaJ9hOotjF8ucsLpOFCW6RkqSTAUAyqDRhQBhwjWNY0TcSLWwmsVSEwJHx582+WI7MvSkaQ8ALcw2Cpkg1/CvCb0xwWUiQO9sixvIF5qpyILP2eedSqxFa0DAOtzXPZmfEllh+8hvj+Rrn4eldSjyaKERzAmM0kpwN2r1WCXqjO9ZUDN+vNgUKr7KpvgYlE5jOyPTgaCAM4nqhouSBREwA+VPwlce4LwaAGzPZbpxImTjUmnGqJRvk/Zxu5N7TlnAwOu3IjN2H2MvNJijt/yy/YvhfdNP3jmCeGRhZb0dcdYpCnqcm+EghqFtw14dUWhX6vnkwPNiiQfC/OVUxcpQq+ZAQulUU46h2OHM5cVg+YYQnsuMlV6swPUkRDWSYy8JVGopRe5IP7JgncQnvMgEjFfw4l/W2wME6tHndj71etwStocj8tRBNDRRjUpKAFW0bVmwazqii2ztWUhltZM4Z0Ey4usjeN+uJOm88lBnz7eAlKW4mXN+irXqcQ2MMNJNw2Sy9zpckdaXsaiwYuInuArcRbw0E3hEL4+UrqLlIl4DBJkVmR0aY0jgdU=
+  - secure: SrVq8xr5axvdpndakabpi/Y1VUzzonjawo3ttXXN8CkKhMX73QvMzHl5mpO7fe805Vn5k55CD5T/hcBDaJ7MU9tNfdvM8fPsY9TgqVQ2NO9cEdYaj+kgHzyo0txKD+ynb9W+qpZ1roDjsCHRaYHoSTSVB/HGKWbQxUVU2hNGiPOARtLLDaMeZBns2zyh6z/HVrkCmRIPJavuHCsxUuMNzYYdrS3WLjUQmksus9IgD2nEbGy+zgNnepsgEZ/wj48w/YLEqAhzaYSN9G3BXV8gNCRtoaSatPT/VhCZ8JYvGDJuBcGGzOFIj4D1jeEWD2gehSsRd8aQ5WeazrCEhRnBj6NyfeFFCM8scZW/xEtEYf3gc2n2QlccMAPxkMZUbsXotdVaaCe9NO6ime1fFbLQyRmaZ7b2fU/SEMh/d3oo8g6nnTM2F3gCmkk1Zk+fX3D/IIsRNzUuPcXXI7deB5FihgCwUp/bHNAeq5X8+0Ch5w+RYj+sDv/cv1JJEXryhF3feNHXZEeZtR2/eoxowoaNVmKSfn+u67BvGieeL/XAVEzmK0P/1RM3JJdo8SaJElxYoiTHa4wbn6/6bA0tQy4l1bHtjpR8kY7YiA+blC6qBppj+gxL1rOpd+6Xv07Qsih6+539rq0+QsxUFwSrmc+Q9Mmx4Cg39PV91j8SaomYG14=
