@@ -2,6 +2,7 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
 from urllib.parse import urljoin
+from selenium.webdriver.chrome.options import Options
 import os
 
 
@@ -12,7 +13,12 @@ class ScrapEngine:
 
     def connectToWebSite(self, url, ignoreTerm=None):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        driver = webdriver.Chrome()
+        options = Options()
+        options.add_argument("--no-sandbox");
+        options.add_argument("--headless");
+        options.add_argument("disable-gpu");
+        options.add_argument("--disable-dev-shm-usage");
+        driver = webdriver.Chrome(options=options)
         driver.get(url)
         content = driver.page_source
         driver.close()
@@ -37,6 +43,7 @@ class ScrapEngine:
                 listMobile.append((name, price, href))
             except Exception as e:
                 print("Error: " + str(e))
+        print("Done with: " + url)
         return listMobile
 
     def processString(self, a: str, ignoreTerm):
