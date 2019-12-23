@@ -61,7 +61,6 @@ class ScrapEngine:
         return allResult
 
     def hideInvalidTag(self, originalContent, invalidTag:[str]):
-        for tag in originalContent:
-            if tag.name in invalidTag:
-                tag.extract()
+        for tag in invalidTag:
+            [x.extract() for x in originalContent.findAll(tag)]
         return originalContent

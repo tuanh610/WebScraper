@@ -36,6 +36,10 @@ class TestPhoneData(unittest.TestCase):
         with self.assertRaises(PhoneDataInvalidException):
             phone3 = PhoneData("testPhone3", -100)
 
+    def test_equal(self):
+        phone1 = PhoneData("test", "3000 VND", {"url":"https://test.html"})
+        phone2 = PhoneData("test", 3000, {"currency": "VND", "url":"https://test.html"})
+        self.assertEqual(phone1, phone2)
 
 if __name__ == '__main__':
     unittest.main()

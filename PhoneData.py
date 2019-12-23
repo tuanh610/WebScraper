@@ -20,7 +20,11 @@ class PhoneData:
             except Exception as e:
                 raise PhoneDataInvalidException
 
-
+    def __eq__(self, other):
+        if self.name == other.name and self.price == other.price and self.info == other.info:
+            return True
+        else:
+            return False
 
     def processPriceString(self, priceStr: str):
         #find currency symbol

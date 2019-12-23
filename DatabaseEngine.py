@@ -40,14 +40,24 @@ def createTable(tableName: str):
                 'WriteCapacityUnits': 3
             }
         )
-        table.meta.client_get_waiter('table_exist').wait(TableName='PriceList')
-        print(table.item_count)
+        table.meta.client.get_waiter('table_exists').wait(TableName=tableName)
     except ClientError as e:
         if e.response['Error']['Code'] == "ResourceNotFoundException":
             print("Table " + tableName + " already existed")
         else:
             print(e.response['Error']['Message'])
+    else:
+        return "Create table " + tableName + "successfully"
 
+def deleteTable(tableName: str):
+    dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
+    table = dynamodb.Table(tableName)
+    try:
+        table.delete()
+    except ClientError as e:
+        print(e.response['Error']['Message'])
+    else:
+        return "Delete table " + tableName + " successfully"
 
 class dynammoDBAdapter:
 
@@ -96,12 +106,15 @@ class dynammoDBAdapter:
                     'DeviceName': phoneName
                 }
             )
-        except ClientError as e:
-            print(e.response['Error']['Message'])
-        else:
             item = response['Item']
             print("Get item successfully")
-            print(json.dumps(item, indent=4, cls=DecimalEncoder))
+            return item
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+            raise ClientError
+        except KeyError as e:
+            print("Data is empty. No Item found")
+            return None
 
     def updateItemToDB(self, item: PhoneData):
         try:
@@ -120,7 +133,7 @@ class dynammoDBAdapter:
             print(e.response['Error']['Message'])
         else:
             print("UpdateItem succeeded:")
-            print(json.dumps(response, indent=4, cls=DecimalEncoder))
+            #print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
     def deleteItemFromDB(self, item:PhoneData):
         try:
@@ -133,5 +146,5 @@ class dynammoDBAdapter:
             print(e.response['Error']['Message'])
         else:
             print("DeleteItem succeeded:")
-            print(json.dumps(response, indent=4, cls=DecimalEncoder))
+            #print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
