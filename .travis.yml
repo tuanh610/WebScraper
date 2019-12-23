@@ -5,20 +5,18 @@ python:
 - '3.8'
 addons:
   chrome: stable
-#make chrome run headless
 before_install:
-- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost &
-#- cd $TRAVIS_BUILD_DIR && ls -a && sudo chmod +x ecr_credential.sh && ls -a && ./ecr_credential.sh
+- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost
+  &
 install:
-  - pip install -r requirements.txt
-# command to run tests
+- pip install -r requirements.txt
 script: python3 Main.py
-#do before script
 before_script:
 - LATEST_CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"`
 - curl "https://chromedriver.storage.googleapis.com/${LATEST_CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
   -O
 - unzip chromedriver_linux64.zip -d ~/bin
 env:
-  - AWS_ACCESS_KEY_ID: "AKIA2ILY674AU3EJGG56"
-  - AWS_SECRET_ACCESS_KEY: "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"
+  global:
+  - secure: PAVqvui5idhC7yuZAmHWaf8s3zNBQyChLC6RYUjIPYXFZNvQfKd49uVMAUxNro+R1LBZBs0/A4uq2Lh2XD9fqOtEm6RgLgArRZB1QtM2WrJG22bO9eI9HvCqq0aj8Y7HplAAhxLua8oOSkHfpgfj2D3fOKx1Y4KVBRShJePietbc2r5eYsPF+XNWick4X7Ouvz5O41AOJpp9Hh4oJ/AcKmZIvTSq4drrnsm+OzwgnqA68Wrvd9w79P/dhf0F1QGbX2s8HfSVy669qc0htBQe5D8J7K6IxTmAGrllbsY9e4JKXUwYXsNL0RcJCuxPyqQajOg2EmUZkFY7la8PPlTB0+xzDHt1BsQ/QNWEQ1pe+JxG3aaQAN43fYgquFQ43Nkm4mj5QJQND9ci86Aaa2ZwoyMcIBCG9/DV0WAbLvIT93GJ6R8mC/HuIlMR/o9Mj2Syu9U+SwASSC2+auWDZ+TlmwwJdmg79+eHhXGUiWllLbFxu12yngtjKzKqu2wi7YQg9EP3KOrJAsWE9kQeUN3ZBq5RTi8U70uCURfnGPBFZ7uXkjeMNheg3G/XSQgte4XlAsG7IXuiRlrkBsWbxqiwLuuQhU7Zxb5QieSepRHn3kB4XyPvjWmI6Y5wpDmw4DgrXN75i6BZ0SKUY0AOVmNQj/j4CKtY6lnURJMv8epTOhw=
+  - secure: Cb7qf39JUr37YC5JReZMkxfTK1ss4j0N4xZ0tIYIn/geJQ2EAScikdPqH2lqeWp1n/GPv8WMETeqPYNEKj6xynl/CZsXA1Dmp+RdS4tHKineZmlUcQ6gLKEhJ5XlJFaQyHNghrRq0nwXZ3oPkINLbJJUx+XDQXnHYerG+jf1AJ65ga2asEONukzRsAY9UqfVZMLBrmBmclol61/QrsblFLFufHa9QgV0bg+l17egWzdbgq8aK66iSzIz0hHX/99rVf5FcrYTK82MU/pTuoX+hKMGYOjpM9bNMkVVDmiXc7axUm/WPapyXCMsEHA6WSHjxDWrN96IcqF/3QM5OJM2s1nSbHbHSYB++1ijcMFe7OV+umJABL5Rjq1zn+iN3eFxi6paI+ehZnLvijeZiovB9X+onCdxcxoRwvv7LbPrs7xhjpfaFqzoyrHkg6djxloOEhJVLH3jp83EERI4vtYzFGY/5kdsmBy3f8cqb7wMev+84GwJmyEgnXxhAbxksnR7FRVZIqSZeYZc9R9qFlL8/WpZenvyYPI8RbnXmaedJYCN2YW2OHE/e/uPiy/0Bz1xvgKP7NKkHkAb1UWddLazN1fN1+DAvqwoy3a9O7sPOVT0PywwsLn10sddW7bqEAz52nrNPuYuHfVaQH9hQDKRlT2Zn1s+ELzoSCq5szl6Xf0=
