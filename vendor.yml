@@ -1,2 +1,2 @@
-unittest/testWebsite.html linguist-vendored
-unittest/testWebsite_files/* linguist-vendored
+- unittest/testWebsite.html
+- unittest/testWebsite_files/*
