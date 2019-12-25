@@ -11,7 +11,7 @@ class TestScrapEngine(unittest.TestCase):
         cls.scraper = ScrapEngine()
 
     def test_connecttoWebsite(self):
-        url = os.path.dirname(os.path.realpath(__file__)) + "/testWebsite.html"
+        url = os.path.dirname(os.path.realpath(__file__)) + "/../testdata/testWebsite.html"
         ignoreTerm = ["Chính hãng", "Chính Hãng", "-"]
         result = self.scraper.connectToWebSite(url, ignoreTerm)
         self.assertEqual(20, len(result))
@@ -27,7 +27,7 @@ class TestScrapEngine(unittest.TestCase):
 
     def test_hideTag(self):
         tag = ['a', 'li', 'strike']
-        url = os.path.dirname(os.path.realpath(__file__)) + "\\testWebsite.html"
+        url = os.path.dirname(os.path.realpath(__file__)) + "/../testdata/testWebsite.html"
         content = open(url, encoding='utf8')
         soup = BeautifulSoup(content.read(), features="html.parser")
         result = self.scraper.hideInvalidTag(soup, tag)
