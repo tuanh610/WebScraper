@@ -5,7 +5,8 @@ class SourceInfo:
 
 
 class SourceData:
-    def __init__(self, url: str, name: str, info: SourceInfo = None):
+    def __init__(self, url: str, name: str, srctype: str, info: SourceInfo = None):
         self.url = url
         self.name = name
         self.info = info
+        self.srcType = srctype

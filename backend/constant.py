@@ -1,6 +1,8 @@
-from backend.DatabaseEngine import DynamoElement
+from backend.database.DatabaseEngine import DynamoElement
+from backend.scraping.HoangHaMobileScraper import HoangHaMobileScraper
 
-
-sourceElements = [DynamoElement('URL', 'HASH', 'S'), DynamoElement('Type', 'RANGE', 'S')]
+sourceElements = [DynamoElement('NAME', 'HASH', 'S'), DynamoElement('TYPE', 'RANGE', 'S')]
 sourceTableName = "Source"
-phoneElements = [DynamoElement('Name', 'HASH', 'S'), DynamoElement('Brand', 'RANGE', 'S')]
+phoneElements = [DynamoElement('NAME', 'HASH', 'S'), DynamoElement('BRAND', 'RANGE', 'S')]
+
+parser = {"hoanghaMobile": HoangHaMobileScraper}

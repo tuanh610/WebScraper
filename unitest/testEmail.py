@@ -1,7 +1,7 @@
 import unittest
-from backend.mailingModule import mailModule
+from backend.mail.mailingModule import mailModule
 
-class MyTestCase(unittest.TestCase):
+class TestEmail(unittest.TestCase):
 
     def setUp(self) -> None:
         self.mail = mailModule()

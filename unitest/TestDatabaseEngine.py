@@ -1,7 +1,9 @@
 import unittest
-from backend import DatabaseEngine
-from backend.DatabaseEngine import ClientError, dynammoDBAdapter, DynamoElement
-from backend.PhoneData import PhoneData
+from backend.database import DatabaseEngine
+from backend.database.DatabaseEngine import ClientError, DynamoElement
+from backend.database.phoneDBEngine import phoneDBEngine
+from backend.scraping.PhoneData import PhoneData
+
 class TestDatabaseCreation(unittest.TestCase):
     def test_dbCreation(self):
         tableName = "test_table"
@@ -21,7 +23,7 @@ class TestDatabaseFunctional(unittest.TestCase):
         self.tableName = "test_table"
         self.dynamoElements = [DynamoElement('DeviceName', 'HASH', 'S')]
         DatabaseEngine.createTable(self.tableName, self.dynamoElements)
-        self.db = dynammoDBAdapter(self.tableName)
+        self.db = phoneDBEngine(self.tableName)
 
     def tearDown(self) -> None:
         DatabaseEngine.deleteTable(self.tableName)

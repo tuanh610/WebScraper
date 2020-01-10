@@ -3,12 +3,21 @@ class PhoneDataInvalidException(Exception):
 
 
 class PhoneData:
-    def __init__(self, name: str, price, info=None):
+    def __init__(self, name: str, price, info=None, brand=None):
         if info is None:
             self.info = {}
         else:
             self.info = info
         self.name = name
+        if brand is None:
+            temp = name.find(' ')
+            if temp < 0:
+                self.brand = name
+            else:
+                self.brand = name[:temp]
+        else:
+            self.brand = brand
+
         if isinstance(price, str):
             self.price = 0
             self.processPriceString(price)
@@ -62,3 +71,6 @@ class PhoneData:
 
     def getInfo(self):
         return self.info
+
+    def getBrand(self):
+        return self.brand

@@ -1,6 +1,6 @@
 import unittest
-from backend.PhoneData import PhoneData
-from backend.PhoneData import PhoneDataInvalidException
+from backend.scraping.PhoneData import PhoneData
+from backend.scraping.PhoneData import PhoneDataInvalidException
 
 class TestPhoneData(unittest.TestCase):
 
