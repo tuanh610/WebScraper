@@ -6,7 +6,7 @@ from backend.database.phoneDBEngine import phoneDBEngine
 from backend.database.sourceDBEngine import sourceDBEngine
 import backend.constant as constant
 
-notifyByEmail = True
+notifyByEmail = False
 
 # Get source data
 DatabaseEngine.createTable(constant.sourceTableName, constant.sourceElements)
