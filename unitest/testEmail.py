@@ -1,5 +1,5 @@
 import unittest
-from mailingModule import mailModule
+from backend.mailingModule import mailModule
 
 class MyTestCase(unittest.TestCase):
 

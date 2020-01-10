@@ -1,9 +1,9 @@
 import boto3
-from boto3.dynamodb.conditions import Key, Attr
+from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 import json
-from PhoneData import PhoneData
-from PhoneData import PhoneDataInvalidException
+from backend.PhoneData import PhoneData
+from backend.PhoneData import PhoneDataInvalidException
 import decimal
 
 
@@ -18,23 +18,32 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-def createTable(tableName: str):
+class DynamoElement:
+    def __init__(self, name, kType, attrType):
+        self.name = name
+        self.kType = kType
+        self.attrType = attrType
+
+    def get_schemaElement(self):
+        return {
+            'AttributeName': self.name,
+            'KeyType': self.kType
+        }
+
+    def get_attributeElement(self):
+        return {
+            'AttributeName': self.name,
+            'AttributeType': self.attrType
+        }
+
+
+def createTable(tableName: str, elements: [DynamoElement]):
     dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
     try:
         table = dynamodb.create_table(
             TableName=tableName,
-            KeySchema=[
-                {
-                    'AttributeName': 'DeviceName',
-                    'KeyType': 'HASH'
-                }
-            ],
-            AttributeDefinitions=[
-                {
-                    'AttributeName': 'DeviceName',
-                    'AttributeType': 'S'
-                }
-            ],
+            KeySchema=[x.get_schemaElement() for x in elements],
+            AttributeDefinitions=[x.get_attributeElement() for x in elements],
             ProvisionedThroughput={
                 'ReadCapacityUnits': 3,
                 'WriteCapacityUnits': 3

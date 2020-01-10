@@ -1,15 +1,14 @@
 import unittest
-import DatabaseEngine
-from DatabaseEngine import ClientError
-from DatabaseEngine import dynammoDBAdapter
-from PhoneData import PhoneData
-
+from backend import DatabaseEngine
+from backend.DatabaseEngine import ClientError, dynammoDBAdapter, DynamoElement
+from backend.PhoneData import PhoneData
 class TestDatabaseCreation(unittest.TestCase):
     def test_dbCreation(self):
         tableName = "test_table"
         outputCreate = "Create table " + tableName + "successfully"
         outputDelete = "Delete table " + tableName + " successfully"
-        self.assertEqual(outputCreate, DatabaseEngine.createTable(tableName))
+        self.dynamoElements = [DynamoElement('DeviceName', 'HASH', 'S')]
+        self.assertEqual(outputCreate, DatabaseEngine.createTable(tableName, self.dynamoElements))
         self.assertEqual(outputDelete, DatabaseEngine.deleteTable(tableName))
 
 class TestDatabaseFunctional(unittest.TestCase):
@@ -20,7 +19,8 @@ class TestDatabaseFunctional(unittest.TestCase):
         self.phone3 = PhoneData("testPhone3", "$SGD 300000")
         self.data = [self.phone, self.phone2, self.phone3]
         self.tableName = "test_table"
-        DatabaseEngine.createTable(self.tableName)
+        self.dynamoElements = [DynamoElement('DeviceName', 'HASH', 'S')]
+        DatabaseEngine.createTable(self.tableName, self.dynamoElements)
         self.db = dynammoDBAdapter(self.tableName)
 
     def tearDown(self) -> None:

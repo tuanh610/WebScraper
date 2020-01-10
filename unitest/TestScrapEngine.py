@@ -1,6 +1,5 @@
 import unittest
-from unittest.mock import patch
-from ScrapEngine import ScrapEngine
+from backend.ScrapEngine import ScrapEngine
 from bs4 import BeautifulSoup
 import os
 

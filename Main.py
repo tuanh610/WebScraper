@@ -1,12 +1,22 @@
-from ScrapEngine import ScrapEngine
-from PhoneData import PhoneData
-from mailingModule import mailModule
-import DatabaseEngine
-from DatabaseEngine import dynammoDBAdapter
-
+from backend.ScrapEngine import ScrapEngine
+from backend.PhoneData import PhoneData
+from backend.SourceData import SourceData
+from backend.mailingModule import mailModule
+from backend import DatabaseEngine
+from backend.DatabaseEngine import dynammoDBAdapter, DynamoElement
+import backend.constant as constant
 
 notifyByEmail = False
 
+
+#Get source data
+DatabaseEngine.createTable(constant.sourceTableName, constant.sourceElements)
+sourceDB = dynammoDBAdapter(constant.sourceTableName)
+sourceData = sourceDB.getAllDataFromTable()
+
+DatabaseEngine.createTable("PriceList")
+dbEngine = dynammoDBAdapter("PriceList")
+dataFromDB = dbEngine.getAllDataFromTable()
 url = "https://hoanghamobile.com/dien-thoai-di-dong-c14.html"
 param = "?sort=0&p="
 
