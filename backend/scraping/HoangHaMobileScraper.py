@@ -1,6 +1,6 @@
 import os.path
 import backend.scraping.ScrapEngine as ScrapEngine
-
+from backend.scraping.PhoneData import PhoneData, PhoneDataInvalidException
 from urllib.parse import urljoin
 
 class NoProductFoundException(Exception):
@@ -27,14 +27,15 @@ class HoangHaMobileScraper:
                 name = ScrapEngine.processString(name_html.getText(), self.ignoreTerm)
                 price = ScrapEngine.processString(price_html.getText(), self.ignoreTerm)
                 href = "n.a"
-                try:
-                    temp = name_html.find('a', href=True)
-                    href = urljoin(url, temp['href'])
-                except Exception as e:
-                    pass
-                listMobile.append((name, price, href, image_src))
+                temp = name_html.find('a', href=True)
+                href = urljoin(url, temp['href'])
+                listMobile.append(PhoneData(name=name, price=price, info={"url": href, "img": image_src}))
+            except PhoneDataInvalidException as error:
+                print("Unable to parse: " + name + ": " + price + ". Error:" + str(error))
+                pass
             except Exception as e:
                 print("Error: " + str(e))
+                pass
         print("Done with: " + url)
         return listMobile
 

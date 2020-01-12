@@ -2,9 +2,12 @@ import boto3
 from backend.scraping.PhoneData import PhoneData, PhoneDataInvalidException
 from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
+import backend.database.DatabaseEngine as DatabaseEngine
+import backend.constant as constant
 
 class phoneDBEngine:
     def __init__(self, tableName: str):
+        DatabaseEngine.createTable(tableName=tableName, elements=constant.phoneElements)
         self.dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
         self.tableName = tableName
         self.table = self.dynamodb.Table(self.tableName)

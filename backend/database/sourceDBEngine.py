@@ -1,12 +1,17 @@
 import boto3
 from backend.scraping.SourceData import SourceData
 from boto3.dynamodb.conditions import Attr
+import backend.constant as constant
 from botocore.exceptions import ClientError
+import backend.database.DatabaseEngine as DatabaseEngine
+
 
 class sourceDBEngine:
-    def __init__(self, tableName: str):
+    def __init__(self):
+        # Create Table if not exist, error handling already in create function
+        DatabaseEngine.createTable(tableName=constant.sourceTableName, elements=constant.sourceElements)
         self.dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
-        self.tableName = tableName
+        self.tableName = constant.sourceTableName
         self.table = self.dynamodb.Table(self.tableName)
 
     def pushAllDataToDB(self, data: [SourceData]):

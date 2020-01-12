@@ -2,6 +2,7 @@ selenium
 beautifulsoup4
 pandas
 boto3
+botocore
 awscli
 google-api-python-client
 google-auth-httplib2

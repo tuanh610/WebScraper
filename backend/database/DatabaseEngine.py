@@ -2,8 +2,6 @@ import boto3
 from boto3.dynamodb.conditions import Attr
 from botocore.exceptions import ClientError
 import json
-from backend.scraping.PhoneData import PhoneData
-from backend.scraping.PhoneData import PhoneDataInvalidException
 import decimal
 
 
@@ -58,6 +56,7 @@ def createTable(tableName: str, elements: [DynamoElement]):
     else:
         return "Create table " + tableName + "successfully"
 
+
 def deleteTable(tableName: str):
     dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
     table = dynamodb.Table(tableName)
@@ -67,5 +66,3 @@ def deleteTable(tableName: str):
         print(e.response['Error']['Message'])
     else:
         return "Delete table " + tableName + " successfully"
-
-

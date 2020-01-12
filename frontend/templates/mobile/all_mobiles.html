@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+{%  include "base/headData.html" %}
+
+<body>
+
+{% include "base/NavBar.html" %}
+
+<main>
+    {%  include "base/intro.html" %}
+    {% for source, phones in allData.items %}
+        <h3 class="center" style="padding: 1em 0 2em 0">Data from {{ source }}</h3>
+
+        <div class="row">
+            {% for phone in phones %}
+                <div class="col s3">
+                    {% include "mobile/cardItems.html" with phone=phone %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</main>
+
+{% include "base/footer.html" %}
+</body>
+</html>
