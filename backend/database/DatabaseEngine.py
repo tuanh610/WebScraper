@@ -4,7 +4,6 @@ from botocore.exceptions import ClientError
 import json
 import decimal
 
-
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):

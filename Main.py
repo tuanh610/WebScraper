@@ -3,7 +3,6 @@ import backend.constant as constant
 from backend.database.phoneDBEngine import phoneDBEngine
 from backend.database.sourceDBEngine import sourceDBEngine
 
-
 def masterUpdate():
     # Get source data
     sourceDBAdapter = sourceDBEngine()

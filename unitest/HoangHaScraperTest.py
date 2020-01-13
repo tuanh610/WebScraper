@@ -2,7 +2,6 @@ import unittest
 import backend.constant as constant
 import os
 
-
 class TestHoangHaMobileScraper(unittest.TestCase):
 
     @classmethod

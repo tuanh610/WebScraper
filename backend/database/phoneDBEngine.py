@@ -77,6 +77,22 @@ class phoneDBEngine:
             print("UpdateItem succeeded:")
             #print(json.dumps(response, indent=4, cls=DecimalEncoder))
 
+    def getItemsWithConditions(self, conditions):
+        try:
+            response = self.table.query(
+                KeyConditionExpression=conditions
+            )
+            result = []
+            for item in response['Items']:
+                try:
+                    result.append(PhoneData(item['NAME'], item['PRICE'], item['INFO'], item['BRAND']))
+                except PhoneDataInvalidException as e:
+                    print("Phone data invalid: " + item['NAME'] + ": " + item['PRICE'])
+            return result
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+        # print(json.dumps(response, indent=4, cls=DecimalEncoder))
+
     def deleteItemFromDB(self, item: PhoneData):
         try:
             response = self.table.delete_item(

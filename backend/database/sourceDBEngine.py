@@ -47,7 +47,7 @@ class sourceDBEngine:
             )
             item = response['Item']
             print("Get item successfully")
-            return item
+            return SourceData(url=item['URL'], name=item['NAME'], srctype=item['TYPE'], info=item['INFO'])
         except ClientError as e:
             print(e.response['Error']['Message'])
             raise ClientError

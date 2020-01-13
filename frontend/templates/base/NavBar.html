@@ -1,11 +1,25 @@
+<!-- Dropdown Structure -->
+<ul id="dropdown1" class="dropdown-content">
+  {% for source in sources %}
+    <li><a href="{% url 'mobile:all_mobiles' source.name 1%}">{{ source.name }}</a></li>
+  {% endfor %}
+  <li class="divider"></li>
+  <li><a href="/">Compare Price</a></li>
+</ul>
+
 <header>
     <nav>
         <div class="container nav-wrapper">
             <a href="/" class="brand-logo">TuAnh Listing</a>
             <ul id="nav-mobile" class="right">
                 <li><a href="/">Home</a></li>
-                <li><a href="{% url 'mobile:all_mobiles' %}">Mobiles</a></li>
+                <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">Mobiles<i class="material-icons right">arrow_drop_down</i></a></li>
             </ul>
         </div>
     </nav>
 </header>
+<script>
+    $(document).ready(function(){
+        $(".dropdown-trigger").dropdown();
+    });
+</script>

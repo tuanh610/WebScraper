@@ -3,11 +3,15 @@ from django.shortcuts import render
 sys.path.append('../')
 from backend.database.sourceDBEngine import sourceDBEngine
 from backend.database.phoneDBEngine import phoneDBEngine
+from django.core.paginator import Paginator
 # Create your views here.
 
 
 def home(request):
-    return render(request, template_name='home.html')
+    sourceDB = sourceDBEngine()
+    allSources = sourceDB.getAllDataFromTable()
+
+    return render(request, 'home.html', {'sources': allSources})
 
 
 def new_search(request):
@@ -17,15 +21,13 @@ def new_search(request):
     return render(request, template_name='mobile/new_search.html', context=context)
 
 
-def all_mobiles(request):
+def all_mobiles(request, source, page):
     # Retrieve all data from amazonDB
     sourceDB = sourceDBEngine()
     allSources = sourceDB.getAllDataFromTable()
+    phoneDB = phoneDBEngine(tableName=source)
+    phones = phoneDB.getAllDataFromTable()
+    paginator = Paginator(phones, 12)
+    allData = paginator.get_page(page)
 
-    allData = {}
-    for source in allSources:
-        phoneDB = phoneDBEngine(tableName=source.name)
-        phones = phoneDB.getAllDataFromTable()
-        allData[source.name] = phones
-    context = {'allData': allData}
-    return render(request, template_name='mobile/all_mobiles.html', context=context)
+    return render(request, 'mobile/all_mobiles.html', {'allData': allData, 'source': source, 'AllSources': allSources})
