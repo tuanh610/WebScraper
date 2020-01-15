@@ -25,14 +25,18 @@ class HoangHaMobileScraper:
             try:
                 image_src = image_html['src']
                 name = ScrapEngine.processString(name_html.getText(), self.ignoreTerm)
+                name_idx = name.find(" ")
+
                 price = ScrapEngine.processString(price_html.getText(), self.ignoreTerm)
                 href = "n.a"
                 temp = name_html.find('a', href=True)
                 href = urljoin(url, temp['href'])
-                listMobile.append(PhoneData(name=name, price=price, info={"url": href, "img": image_src}))
-            except PhoneDataInvalidException as error:
-                print("Unable to parse: " + name + ": " + price + ". Error:" + str(error))
-                pass
+                try:
+                    listMobile.append(PhoneData(brand=name, model="", price=price, vendor="hoanghaMobile",
+                                                info={"url": href, "img": image_src}))
+                except PhoneDataInvalidException as error:
+                    print("Unable to parse: " + name + ": " + price + ". Error:" + str(error))
+                    pass
             except Exception as e:
                 print("Error: " + str(e))
                 pass

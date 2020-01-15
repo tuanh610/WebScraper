@@ -3,26 +3,35 @@ from backend.database import DatabaseEngine
 from backend.database.DatabaseEngine import ClientError, DynamoElement
 from backend.database.phoneDBEngine import phoneDBEngine
 from backend.scraping.PhoneData import PhoneData
+import backend.constant as constants
+
 
 class TestDatabaseCreation(unittest.TestCase):
     def test_dbCreation(self):
         tableName = "test_table"
         outputCreate = "Create table " + tableName + "successfully"
         outputDelete = "Delete table " + tableName + " successfully"
-        self.dynamoElements = [DynamoElement('DeviceName', 'HASH', 'S')]
-        self.assertEqual(outputCreate, DatabaseEngine.createTable(tableName, self.dynamoElements))
+        self.pElements = constants.phonePrimaryElements
+        self.sElements = constants.phoneSecondaryElements
+        self.assertEqual(outputCreate, DatabaseEngine.createTable(tableName, self.pElements, self.sElements))
         self.assertEqual(outputDelete, DatabaseEngine.deleteTable(tableName))
+
 
 class TestDatabaseFunctional(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.phone = PhoneData("testPhone", "500000 VND")
-        self.phone2 = PhoneData("testPhone2", "300000 VND", {"url": "https:/testURL.com"})
-        self.phone3 = PhoneData("testPhone3", "$SGD 300000")
+        self.phone = PhoneData(brand="test", model="Megatron", price="500000 VND", vendor="unitTest")
+        self.phone2 = PhoneData(brand="test", model="Megatron XL", price="1000000 VND", vendor="unitTest",
+                                info={"url": "https:/testURL.com"})
+        self.phone3 = PhoneData(brand="test 1", model="Decepticon", price="$SGD 300000", vendor="unitTest",
+                                info={"url": "https:/testURL.com"})
+
         self.data = [self.phone, self.phone2, self.phone3]
         self.tableName = "test_table"
+        self.pElements = constants.phonePrimaryElements
+        self.sElements = constants.phoneSecondaryElements
         self.dynamoElements = [DynamoElement('DeviceName', 'HASH', 'S')]
-        DatabaseEngine.createTable(self.tableName, self.dynamoElements)
+        DatabaseEngine.createTable(self.tableName, self.pElements, self.sElements)
         self.db = phoneDBEngine(self.tableName)
 
     def tearDown(self) -> None:
@@ -43,15 +52,17 @@ class TestDatabaseFunctional(unittest.TestCase):
         self.phone.info["currency"] = "Yolo Dollar"
         self.db.updateItemToDB(self.phone)
         try:
-            result = self.db.getItemFromDB(self.phone.name)
-            self.assertIsNotNone(result)
+            result = self.db.getPhoneFromDB(brand=self.phone.getBrand(),
+                                            model=self.phone.getModel(), vendor=self.phone.getVendor())
+            self.assertEqual(result.getPrice(), self.phone.getPrice())
+            self.assertEqual(result.getInfo().get("currency"), self.phone.getInfo().get("currency"))
         except ClientError as e:
             self.fail("update Data failed")
         # Delete
         self.db.deleteItemFromDB(self.phone)
-        self.assertIsNone(self.db.getItemFromDB(self.phone.name))
-
-
+        temp = self.db.getPhoneFromDB(brand=self.phone.getBrand(),
+                                                 model=self.phone.getModel(), vendor=self.phone.getVendor())
+        self.assertIsNone(temp)
 
 if __name__ == '__main__':
     unittest.main()

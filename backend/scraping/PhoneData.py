@@ -3,20 +3,26 @@ class PhoneDataInvalidException(Exception):
 
 
 class PhoneData:
-    def __init__(self, name: str, price, info=None, brand=None):
+    def __init__(self, brand: str, model: str, price, vendor: str, info=None):
         if info is None:
             self.info = {}
         else:
             self.info = info
-        self.name = name
-        if brand is None:
-            temp = name.find(' ')
-            if temp < 0:
-                self.brand = name
-            else:
-                self.brand = name[:temp]
-        else:
+        if model != "":
             self.brand = brand
+            self.model = model
+        else:
+            idx = brand.find(" ")
+            temp1 = brand[:idx] if idx >= 0 else brand
+            temp2 = brand[idx+1:] if len(brand) > idx+1 > 0 else ""
+            for i in range(len(temp1)):
+                if temp1[i].isdigit():
+                    temp2 = temp1[i:] + (" " + temp2 if temp2 != "" else "")
+                    temp1 = temp1[:i]
+                    break
+            self.brand = temp1
+            self.model = temp2
+        self.vendor = vendor
 
         if isinstance(price, str):
             self.price = 0
@@ -30,7 +36,13 @@ class PhoneData:
                 raise PhoneDataInvalidException
 
     def __eq__(self, other):
-        if self.name == other.name and self.price == other.price and self.info == other.info:
+        if self.brand == other.brand and self.model == other.model and self.vendor == other.vendor:
+            return True
+        else:
+            return False
+
+    def needUpdate(self, oldData):
+        if (self == oldData) and (self.price != oldData.price or self.info != oldData.info):
             return True
         else:
             return False
@@ -64,7 +76,7 @@ class PhoneData:
         return temp
 
     def getName(self):
-        return self.name
+        return self.brand + " " + self.model
 
     def getPrice(self):
         return self.price
@@ -74,3 +86,12 @@ class PhoneData:
 
     def getBrand(self):
         return self.brand
+
+    def getModel(self):
+        return self.model
+
+    def getVendor(self):
+        return self.vendor
+
+    def getDBModel(self):
+        return self.model + "_" + self.vendor

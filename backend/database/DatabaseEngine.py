@@ -33,17 +33,42 @@ class DynamoElement:
             'AttributeType': self.attrType
         }
 
+class DynamoGSI:
+    def __init__(self, name, elements: [DynamoElement]):
+        self.name = name
+        self.elements = elements
 
-def createTable(tableName: str, elements: [DynamoElement]):
+    def getData(self):
+        data = {
+            'IndexName': self.name,
+            'KeySchema': [x.get_schemaElement() for x in self.elements],
+            "Projection": {
+                        "ProjectionType": "ALL"
+                    },
+            "ProvisionedThroughput": {
+                "ReadCapacityUnits": 1,
+                "WriteCapacityUnits": 1,
+            }
+        }
+        return data
+
+
+def createTable(tableName: str, primaryElemens: [DynamoElement], secondaryElements: [DynamoGSI]):
     dynamodb = boto3.resource('dynamodb', region_name='ap-southeast-1')
     try:
+        # Flatten GSI lists for attribute def
+        attr_def = []
+        for gsi in secondaryElements:
+            for element in gsi.elements:
+                attr_def.append(element.get_attributeElement())
         table = dynamodb.create_table(
             TableName=tableName,
-            KeySchema=[x.get_schemaElement() for x in elements],
-            AttributeDefinitions=[x.get_attributeElement() for x in elements],
+            AttributeDefinitions=[x.get_attributeElement() for x in primaryElemens] + attr_def,
+            KeySchema=[x.get_schemaElement() for x in primaryElemens],
+            GlobalSecondaryIndexes=[x.getData() for x in secondaryElements],
             ProvisionedThroughput={
-                'ReadCapacityUnits': 3,
-                'WriteCapacityUnits': 3
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1
             }
         )
         table.meta.client.get_waiter('table_exists').wait(TableName=tableName)

@@ -1,25 +1,19 @@
 from backend.mail.mailingModule import mailModule
 import backend.constant as constant
 from backend.database.phoneDBEngine import phoneDBEngine
-from backend.database.sourceDBEngine import sourceDBEngine
 
 def masterUpdate():
-    # Get source data
-    sourceDBAdapter = sourceDBEngine()
-    sourceData = sourceDBAdapter.getAllDataFromTable()
-
     ChangesToNotify = {}
+    phoneDBAdaper = phoneDBEngine(constant.dynamoDBTableName)
 
     # Loop through each source to update information
-    for src in sourceData:
+    for src in constant.scrapingSources:
         if src.name in constant.parser:
-            parser = constant.parser[src.name](src.info.get('ignoreTerm'), src.url, src.info.get('param'))
+            parser = constant.parser[src.name](src.info.ignoreTerm, src.url, src.info.param)
             data = parser.getAllPages()
 
             # Update data for each source
-            phoneDBAdaper = phoneDBEngine(src.name)
             dataFromDB = phoneDBAdaper.getAllDataFromTable()
-
             updateNeeded = []
             newItem = []
             # Update data
@@ -27,7 +21,7 @@ def masterUpdate():
                 existed = False
                 for phone in dataFromDB:
                     if item.getName() == phone.getName():
-                        if item.getPrice() != phone.getPrice() or item.getInfo() != phone.getInfo():
+                        if item != phone:
                             updateNeeded.append((item, phone))
                         existed = True
                         break

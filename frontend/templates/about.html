@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+{%  include "base/headData.html" %}
+
+<body>
+    {% include "base/NavBar.html" with sources=sources%}
+    <main>
+        <h1 style="text-align: center">About Me</h1>
+        <div class="row">
+            <div class="col s4">
+                <div class="center">
+                    <i class="large material-icons" style="color: palevioletred">person</i>
+                    <p>Particular</p>
+                    <p class="light center">Name: Dang Tu Anh</p>
+                    <p class="light center">Nationality: Vietnamese</p>
+                    <p class="light center">Work Pass: EP</p>
+                </div>
+            </div>
+
+            <div class="col s4">
+                <div class="center">
+                    <i class="large material-icons" style="color: palevioletred">book</i>
+                    <p>Education</p>
+                    <p class="light center">University: National University of Singapore</p>
+                    <p class="light center">Degree: Bachelor of Electrical Engineering</p>
+                </div>
+            </div>
+
+            <div class="col s4">
+                <div class="center">
+                    <i class="large material-icons" style="color: palevioletred">work</i>
+                    <p>Work Experiences</p>
+                    <p class="light center">Software Engineer - Thales (current)</p>
+                    <p class="light center">Software Engineer - Continental (current)</p>
+                    <p class="light center">Software Engineer - NDIAutomation (current)</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    {% include "base/footer.html"%}
+</body>
