@@ -20,17 +20,30 @@ def masterUpdate():
             for item in data:
                 existed = False
                 for phone in dataFromDB:
-                    if item.getName() == phone.getName():
-                        if item != phone:
+                    if item == phone:
+                        if item.needUpdate(oldData=phone):
                             updateNeeded.append((item, phone))
                         existed = True
                         break
                 if not existed:
                     newItem.append(item)
+            #Delete old items that not there anymore
+            toDelete = []
+            for phone in dataFromDB:
+                existed = False
+                for item in data:
+                    if item == phone:
+                        existed = True
+                        break
+                if not existed:
+                    toDelete.append(phone)
 
             # push new data to database
             for item, _ in updateNeeded:
                 phoneDBAdaper.updateItemToDB(item)
+
+            for item in toDelete:
+                phoneDBAdaper.deleteItemFromDB(item)
 
             if len(newItem) > 0:
                 phoneDBAdaper.pushAllDataToDB(newItem)
