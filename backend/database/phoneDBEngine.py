@@ -5,6 +5,7 @@ from botocore.exceptions import ClientError
 import backend.database.DatabaseEngine as DatabaseEngine
 import backend.constant as constant
 
+
 class phoneDBEngine:
     def __init__(self, tableName: str):
         DatabaseEngine.createTable(tableName=tableName, primaryElemens=constant.phonePrimaryElements,
@@ -95,6 +96,23 @@ class phoneDBEngine:
         except ClientError as e:
             print(e.response['Error']['Message'])
 
+    def getPhonesInPriceRange(self, lowerLim, upperLim):
+        try:
+            gsiElement = constant.phoneSecondaryElements[0]
+            response = self.table.query(
+                IndexName=gsiElement.name,
+                KeyConditionExpression=Key(gsiElement.elements[0].name).eq('Mobile') &
+                                       Key(gsiElement.elements[1].name).between(lowerLim, upperLim),
+            )
+            result = []
+            for item in response['Item']:
+                phone = phoneDBEngine.convertDBDataToPhone(item)
+                if phone is not None:
+                    result.append(phone)
+            return result
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+
     def updateItemToDB(self, item: PhoneData):
         try:
             response = self.table.update_item(
@@ -113,6 +131,40 @@ class phoneDBEngine:
             print(e.response['Error']['Message'])
         else:
             print("UpdateItem succeeded:")
+
+    def updateAllBrandData(self, all_brands):
+        try:
+            response = self.table.update_item(
+                Key={
+                    'BRAND': constant.dynamoDBAllBrandPK,
+                    'MODEL': constant.dynamoDBAllBrandRK,
+                },
+                UpdateExpression="set BRAND_NAMES = :n",
+                ExpressionAttributeValues={
+                    ':n': all_brands,
+                },
+                ReturnValues="UPDATED_NEW"
+            )
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+        else:
+            print("All brands list updated succeeded:")
+
+    def getAllBrandData(self):
+        try:
+            response = self.table.get_item(
+                Key={
+                    'BRAND': constant.dynamoDBAllBrandPK,
+                    'MODEL': constant.dynamoDBAllBrandRK,
+                }
+            )
+            result = []
+            for brand in response['Item']['BRAND_NAMES']:
+                result.append(brand.strip())
+            return result
+        except ClientError as e:
+            print(e.response['Error']['Message'])
+
 
     def deleteItemFromDB(self, item: PhoneData):
         try:
@@ -144,10 +196,10 @@ class phoneDBEngine:
     @staticmethod
     def convertPhoneToDBData(phone: PhoneData):
         return {
-                    'BRAND': phone.getBrand(),
-                    'MODEL': phone.getDBModel(),
-                    'TYPE': 'Mobile',
-                    'PRICE': phone.getPrice(),
-                    'VENDOR': phone.getVendor(),
-                    'INFO': phone.getInfo()
-                }
+            'BRAND': phone.getBrand(),
+            'MODEL': phone.getDBModel(),
+            'TYPE': 'Mobile',
+            'PRICE': phone.getPrice(),
+            'VENDOR': phone.getVendor(),
+            'INFO': phone.getInfo()
+        }

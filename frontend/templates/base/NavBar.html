@@ -1,10 +1,9 @@
 <!-- Dropdown Structure -->
 <ul id="dropdown1" class="dropdown-content">
-  {% for source in sources %}
-    <li><a href="{% url 'mobile:all_mobiles' source.name 1%}">{{ source.name }}</a></li>
-  {% endfor %}
+  <li><a href="{% url 'mobile:all_mobiles' 1%}">All Mobiles</a></li>
+
   <li class="divider"></li>
-  <li><a href="/">Compare Price</a></li>
+  <li><a href="{% url 'mobile:new_search' %}">Search devices</a></li>
 </ul>
 
 <header>
@@ -12,8 +11,8 @@
         <div class="container nav-wrapper">
             <a href="/" class="brand-logo">TuAnh Listing</a>
             <ul id="nav-mobile" class="right">
-                <li><a href="/">Home</a></li>
                 <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">Mobiles<i class="material-icons right">arrow_drop_down</i></a></li>
+                <li><a href={% url 'mobile:about' %}>About</a></li>
             </ul>
         </div>
     </nav>

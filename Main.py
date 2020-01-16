@@ -5,7 +5,7 @@ from backend.database.phoneDBEngine import phoneDBEngine
 def masterUpdate():
     ChangesToNotify = {}
     phoneDBAdaper = phoneDBEngine(constant.dynamoDBTableName)
-
+    all_brands = set()
     # Loop through each source to update information
     for src in constant.scrapingSources:
         if src.name in constant.parser:
@@ -18,6 +18,7 @@ def masterUpdate():
             newItem = []
             # Update data
             for item in data:
+                all_brands.add(item.getBrand())
                 existed = False
                 for phone in dataFromDB:
                     if item == phone:
@@ -49,7 +50,14 @@ def masterUpdate():
                 phoneDBAdaper.pushAllDataToDB(newItem)
 
             # Add changes to notify list
-            ChangesToNotify[src.name] = (newItem, updateNeeded)
+            ChangesToNotify[src.name] = (newItem, updateNeeded, toDelete)
+
+            #Update all brands
+            phoneDBAdaper.updateAllBrandData(list(all_brands))
+            f = open("brands.txt", "+w")
+            f.write(', '.join(list(all_brands)))
+            f.close()
+
         else:
             print("Parser for " + src.name + " is not available. Skip")
     return ChangesToNotify
@@ -59,7 +67,7 @@ def notifyByEmail(changes):
     content = ""
     for src in changes:
         content += "Update for %s:\n" % src
-        newItem, updateNeeded = changes[src]
+        newItem, updateNeeded, toDelete = changes[src]
         if len(newItem) > 0:
             content += "New Items:\n"
             for item in newItem:
@@ -76,6 +84,11 @@ def notifyByEmail(changes):
                                                                                oldItem.getPrice(),
                                                                                oldInfo["currency"],
                                                                                item.getPrice(), info["currency"])
+        if len(toDelete) > 0:
+            content += "Items Removed: "
+            for item in toDelete:
+                content += "Name: %s. From vendor: %s\n" % (item.getName(), item.getVendor())
+
         if content == "":
             content = "No update needed"
         content += "================================================================\n"
@@ -92,8 +105,13 @@ NotifyByEmail is false as I do not include the credentials and tokens of my Gmai
 Once the project is pulled from the projects, please use the link in mailingModule to get your
 credentials.json file. Then enable this code by set notifyByEmail to true
 """
-notify = False
+
+notify = True
 changeToSend = masterUpdate()
 if notify:
     notifyByEmail(changeToSend)
 print("done")
+
+
+
+

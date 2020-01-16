@@ -57,4 +57,3 @@ class HoangHaMobileScraper:
             except NoProductFoundException as e:
                 break
         return allResult
-

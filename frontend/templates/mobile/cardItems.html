@@ -4,9 +4,9 @@
       <img src="{{ phone.info|get_item:'img' }}">
     </div>
     <div class="card-content">
-      <p>{{ phone.name }}</p>
+      <p>{{ phone.brand }} {{ phone.model }}</p>
     </div>
     <div class="card-action">
-      <a href="{{ phone.info|get_item:'url' }}">Price: {{ phone.price }} {{ phone.info|get_item:'currency' }}</a>
+      <a href="{{ phone.info|get_item:'url' }}">Price from: {{ phone.price }} {{ phone.info|get_item:'currency' }}</a>
     </div>
 </div>

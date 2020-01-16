@@ -4,28 +4,33 @@ sys.path.append('../')
 from backend.database.phoneDBEngine import phoneDBEngine
 from django.core.paginator import Paginator
 import backend.constant as constants
+import backend.utilityHelper as helper
+import backend.constant as constant
 # Create your views here.
 
 
 def home(request):
     return render(request, 'home.html', {'sources': constants.scrapingSources})
 
+
 def about(request):
     return render(request, 'about.html')
 
+
 def new_search(request):
-    search_txt = request.POST.get('search')
-    context = {'search': search_txt, }
-    context_object_name = 'search_txt'
-    return render(request, template_name='mobile/new_search.html', context=context)
+    phoneDBAdapter = phoneDBEngine(tableName=constant.dynamoDBTableName)
+    all_brands = phoneDBAdapter.getAllBrandData()
+    return render(request, template_name='mobile/new_search.html', context={"all_brands": all_brands})
 
 
-def all_mobiles(request, source, page):
+def all_mobiles(request, page):
     # Retrieve all data from amazonDB
-    phoneDB = phoneDBEngine(tableName=source)
+    phoneDB = phoneDBEngine(tableName=constants.dynamoDBTableName)
     phones = phoneDB.getAllDataFromTable()
-    paginator = Paginator(phones, 12)
+    processedList = helper.getLowestPriceList(phones)
+    paginator = Paginator(list(processedList.values()), 12)
     allData = paginator.get_page(page)
 
     return render(request, 'mobile/all_mobiles.html',
-                  {'allData': allData, 'source': source, 'AllSources': constants.scrapingSources})
+                  {'allData': allData})
+
